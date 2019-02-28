@@ -1,7 +1,7 @@
 package udemy.learning.ppmtool.service;
 
 import org.springframework.stereotype.Service;
-import udemy.learning.ppmtool.domain.Project;
+import udemy.learning.ppmtool.entity.Project;
 import udemy.learning.ppmtool.repository.ProjectRepository;
 
 @Service
