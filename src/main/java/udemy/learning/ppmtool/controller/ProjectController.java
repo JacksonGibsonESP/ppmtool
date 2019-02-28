@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import udemy.learning.ppmtool.entity.Project;
 import udemy.learning.ppmtool.service.ProjectService;
+import udemy.learning.ppmtool.service.ValidationService;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
 
     private ProjectService projectService;
+    private ValidationService validationService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService,
+                             ValidationService validationService) {
         this.projectService = projectService;
+        this.validationService = validationService;
     }
 
     @PostMapping("")
     public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result) {
 
-        if (result.hasErrors()) {
-            return new ResponseEntity<>("Invalid Project Object", HttpStatus.BAD_REQUEST);
+        ResponseEntity<Map<String, String>> validationResult = validationService.validate(result);
+        if (validationResult != null) {
+            return validationResult;
         }
 
         Project projectPersisted = projectService.saveOrUpdate(project);
