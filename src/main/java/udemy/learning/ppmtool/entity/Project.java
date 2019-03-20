@@ -106,4 +106,18 @@ public class Project {
     protected void onUpdate() {
         updatedAt = new Date();
     }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "Id=" + Id +
+                ", projectName='" + projectName + '\'' +
+                ", projectIdentifier='" + projectIdentifier + '\'' +
+                ", description='" + description + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
