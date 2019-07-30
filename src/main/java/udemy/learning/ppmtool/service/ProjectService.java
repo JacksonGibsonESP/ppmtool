@@ -1,22 +1,36 @@
 package udemy.learning.ppmtool.service;
 
 import org.springframework.stereotype.Service;
+import udemy.learning.ppmtool.entity.Backlog;
 import udemy.learning.ppmtool.entity.Project;
 import udemy.learning.ppmtool.exception.ProjectIdException;
+import udemy.learning.ppmtool.repository.BacklogRepository;
 import udemy.learning.ppmtool.repository.ProjectRepository;
 
 @Service
 public class ProjectService {
 
     private ProjectRepository projectRepository;
+    private BacklogRepository backlogRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, BacklogRepository backlogRepository) {
         this.projectRepository = projectRepository;
+        this.backlogRepository = backlogRepository;
     }
 
     public Project saveOrUpdate(Project project) {
         try {
             project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+
+            if (project.getId() == null) {
+                Backlog backlog = new Backlog();
+                project.setBacklog(backlog);
+                backlog.setProject(project);
+                backlog.setProjectIdentifier(project.getProjectIdentifier());
+            } else {
+                project.setBacklog(backlogRepository.findByProjectIdentifier(project.getProjectIdentifier()));
+            }
+
             return projectRepository.save(project);
         } catch (Exception e) {
             throw new ProjectIdException("Project Id: '" + project.getProjectIdentifier().toUpperCase() + "' already exists");
