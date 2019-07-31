@@ -56,4 +56,23 @@ public class ProjectTaskService {
 
         return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
     }
+
+    public ProjectTask findPTByProjectSequence(String backlogId, String PTId) {
+        Backlog backlog = backlogRepository.findByProjectIdentifier(backlogId);
+        if (backlog == null) {
+            throw new ProjectNotFoundException("Project with ID: '" + backlogId + "' does not exist.");
+        }
+
+        ProjectTask projectTask = projectTaskRepository.findByProjectSequence(PTId);
+
+        if (projectTask == null) {
+            throw new ProjectNotFoundException("Project Task '" + PTId + "' not found");
+        }
+
+        if (!projectTask.getProjectIdentifier().equals(backlogId)) {
+            throw new ProjectNotFoundException("Project Task '" + PTId + "' does not exist in project: " + backlogId);
+        }
+
+        return projectTask;
+    }
 }
