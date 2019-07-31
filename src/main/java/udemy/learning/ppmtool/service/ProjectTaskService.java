@@ -75,4 +75,20 @@ public class ProjectTaskService {
 
         return projectTask;
     }
+
+    public ProjectTask updateByProjectSequence(ProjectTask updatedProjectTask, String backlogId, String PTId) {
+        ProjectTask projectTaskToUpdate = findPTByProjectSequence(backlogId, PTId);
+
+        if (!projectTaskToUpdate.getId().equals(updatedProjectTask.getId())) {
+            throw new ProjectNotFoundException("You are trying to modificate project task with different project sequence number.");
+        }
+
+        return projectTaskRepository.save(updatedProjectTask);
+    }
+
+    public void deletePTByProjectSequence(String backlogId, String PTId) {
+        ProjectTask projectTaskToDelete = findPTByProjectSequence(backlogId, PTId);
+
+        projectTaskRepository.delete(projectTaskToDelete);
+    }
 }

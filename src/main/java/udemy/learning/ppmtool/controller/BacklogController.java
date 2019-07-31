@@ -44,4 +44,21 @@ public class BacklogController {
         ProjectTask projectTask = projectTaskService.findPTByProjectSequence(backlogId, PTId);
         return new ResponseEntity<>(projectTask, HttpStatus.OK);
     }
+
+    @PatchMapping("/{backlogId}/{PTId}")
+    public ResponseEntity<?> updateProjectTask(@Valid @RequestBody ProjectTask updatedProjectTask, BindingResult result,
+                                               @PathVariable String backlogId, @PathVariable String PTId) {
+        ResponseEntity<?> errorMap = validationService.validate(result);
+        if (errorMap != null) return errorMap;
+
+        ProjectTask updatedTask = projectTaskService.updateByProjectSequence(updatedProjectTask, backlogId, PTId);
+        return new ResponseEntity<>(updatedTask, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{backlogId}/{PTId}")
+    public ResponseEntity<?> deleteProjectTask(@PathVariable String backlogId, @PathVariable String PTId) {
+        projectTaskService.deletePTByProjectSequence(backlogId, PTId);
+
+        return new ResponseEntity<>("Project Task " + PTId + " was deleted successfully", HttpStatus.OK);
+    }
 }
