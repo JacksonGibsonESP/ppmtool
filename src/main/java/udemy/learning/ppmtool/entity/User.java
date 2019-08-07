@@ -2,6 +2,7 @@ package udemy.learning.ppmtool.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,8 +25,10 @@ public class User implements UserDetails {
     @NotBlank(message = "Please enter your full name")
     private String fullName;
     @NotBlank(message = "Password field is required")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String confirmPassword;
     @Column(updatable = false)
     private Date createdAt;
