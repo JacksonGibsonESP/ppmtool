@@ -1,7 +1,6 @@
 package udemy.learning.ppmtool.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import udemy.learning.ppmtool.entity.User;
@@ -15,7 +14,7 @@ import static udemy.learning.ppmtool.security.SecurityConstants.SECRET;
 
 @Component
 public class JwtTokenProvider {
-    //Generate the token
+
     public String generateToken(Authentication authentication){
         User user = (User) authentication.getPrincipal();
         Date now = new Date(System.currentTimeMillis());
@@ -36,9 +35,27 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
-    //Validate the token
 
-    //Get user Id from token
+    public Boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            return true;
+        } catch (SignatureException e) {
+            System.out.println("Invalid JWT Signature");
+        } catch (MalformedJwtException e) {
+            System.out.println("Invalid JWT Token");
+        } catch (ExpiredJwtException e) {
+            System.out.println("Expired JWT Token");
+        } catch (UnsupportedJwtException e) {
+            System.out.println("Unsupported JWT Token");
+        } catch (IllegalArgumentException e) {
+            System.out.println("JWT claims string is empty");
+        }
+        return false;
+    }
 
-
+    public long getUserIdFromJWT(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        return Long.parseLong((String) claims.get("id"));
+    }
 }
