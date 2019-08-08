@@ -9,6 +9,7 @@ import udemy.learning.ppmtool.service.ProjectService;
 import udemy.learning.ppmtool.service.ValidationService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -26,14 +27,14 @@ public class ProjectController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result) {
+    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result, Principal principal) {
 
         ResponseEntity<Map<String, String>> validationResult = validationService.validate(result);
         if (validationResult != null) {
             return validationResult;
         }
 
-        Project projectPersisted = projectService.saveOrUpdate(project);
+        Project projectPersisted = projectService.saveOrUpdate(project, principal.getName());
         return new ResponseEntity<>(projectPersisted, HttpStatus.CREATED);
     }
 
