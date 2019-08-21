@@ -5,6 +5,7 @@ import udemy.learning.ppmtool.entity.Backlog;
 import udemy.learning.ppmtool.entity.Project;
 import udemy.learning.ppmtool.entity.User;
 import udemy.learning.ppmtool.exception.ProjectIdException;
+import udemy.learning.ppmtool.exception.ProjectNotFoundException;
 import udemy.learning.ppmtool.repository.BacklogRepository;
 import udemy.learning.ppmtool.repository.ProjectRepository;
 import udemy.learning.ppmtool.repository.UserRepository;
@@ -45,7 +46,7 @@ public class ProjectService {
         }
     }
 
-    public Project findProjectByIdentifier(String projectId) {
+    public Project findProjectByIdentifier(String projectId, String username) {
 
         Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
 
@@ -53,19 +54,27 @@ public class ProjectService {
             throw new ProjectIdException("Project Id: '" + projectId.toUpperCase() + "' does not exist");
         }
 
+        if (!project.getProjectLeader().equals(username)) {
+            throw new ProjectNotFoundException("Project not found in your account.");
+        }
+
         return project;
     }
 
-    public Iterable<Project> findAllProjects() {
-        return projectRepository.findAll();
+    public Iterable<Project> findAllProjects(String username) {
+        return projectRepository.findAllByProjectLeader(username);
     }
 
-    public void deleteProjectByIdentifier(String projectId) {
+    public void deleteProjectByIdentifier(String projectId, String username) {
         Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
 
         if (project == null) {
             throw new ProjectIdException("Cannot delete project with id: '" + projectId.toUpperCase()
                     + "'. This project does not exist.");
+        }
+
+        if (!project.getProjectLeader().equals(username)) {
+            throw new ProjectNotFoundException("Project not found in your account.");
         }
 
         projectRepository.delete(project);
