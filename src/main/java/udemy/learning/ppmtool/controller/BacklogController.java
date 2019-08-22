@@ -9,6 +9,7 @@ import udemy.learning.ppmtool.service.ProjectTaskService;
 import udemy.learning.ppmtool.service.ValidationService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/backlog")
@@ -25,18 +26,18 @@ public class BacklogController {
 
     @PostMapping("/{backlogId}")
     public ResponseEntity<?> addProjectTaskToBacklog(@Valid @RequestBody ProjectTask projectTask,
-                                                     BindingResult result, @PathVariable String backlogId) {
+                                                     BindingResult result, @PathVariable String backlogId, Principal principal) {
         ResponseEntity<?> errorMap = validationService.validate(result);
         if (errorMap != null) return errorMap;
 
-        ProjectTask projectTask1 = projectTaskService.addProjectTask(backlogId, projectTask);
+        ProjectTask projectTask1 = projectTaskService.addProjectTask(backlogId, projectTask, principal.getName());
 
         return new ResponseEntity<>(projectTask1, HttpStatus.CREATED);
     }
 
     @GetMapping("/{backlogId}")
-    public Iterable<ProjectTask> getProjectBacklog(@PathVariable String backlogId) {
-        return projectTaskService.findBacklogById(backlogId);
+    public Iterable<ProjectTask> getProjectBacklog(@PathVariable String backlogId, Principal principal) {
+        return projectTaskService.findBacklogById(backlogId, principal.getName());
     }
 
     @GetMapping("/{backlogId}/{PTId}")
